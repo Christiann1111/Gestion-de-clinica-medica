@@ -18,6 +18,8 @@ En estas tablas se almacenarán los datos. Cada una contiene claves primarias y 
 Creé procedimientos almacenados que gestionan de forma eficiente la carga, actualización y consulta de datos. Por ejemplo, el procedimiento **HistorialDePaciente** imprime el historial del paciente sin necesidad de crear una consulta manual.  
 En estos procedimientos se contemplan aspectos como la creación de variables y la correcta asignación de tipos de datos, entre otros detalles importantes.
 
+Contiene ejemplos de uso en el código 
+
 ### Consultas:
 
 Se incluyen consultas que permiten visualizar distintos tipos de información que serán requeridos en el futuro dentro de la misma base de datos. Estas consultas se han convertido en vistas para facilitar su uso.
