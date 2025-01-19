@@ -1,0 +1,202 @@
+CREATE DATABASE Clinica ;
+
+Use Clinica;
+
+CREATE TABLE Pacientes (
+	dni INT PRIMARY KEY,
+	first_name VARCHAR(50),
+	last_name VARCHAR(50),
+	direction VARCHAR(100),
+	date_of_birth DATE)
+
+CREATE TABLE Medicos (
+	dni INT PRIMARY KEY,
+	first_name VARCHAR(50),
+	last_name VARCHAR(50),
+	direction VARCHAR(100),
+	especiality VARCHAR(100))
+
+CREATE TABLE Turnos(
+	turno INT IDENTITY(1,1) PRIMARY KEY,
+	fecha_turno DATE,
+	paciente_dni INT FOREIGN KEY REFERENCES Pacientes(dni),
+	medico_dni INT FOREIGN KEY REFERENCES Medicos(dni),)
+
+CREATE TABLE HistoriasClinicas (
+	 
+	observacion VARCHAR(1500),
+	dni_paciente INT FOREIGN KEY REFERENCES Pacientes(dni),
+	turno INT FOREIGN KEY REFERENCES  Turnos(turno)
+	)
+
+CREATE TABLE Pagos(
+	id_pago INT IDENTITY(1,1) PRIMARY KEY,
+	fecha_pago DATE,
+	paciente_dni INT FOREIGN KEY REFERENCES Pacientes(dni),
+	turno INT FOREIGN KEY REFERENCES Turnos(turno)
+	 )
+
+
+	
+----------------------------------------------------------------
+
+
+Use Clinica;
+
+CREATE PROCEDURE InsertarPacientes
+	@dni INT ,
+	@first_name VARCHAR(50),
+	@last_name VARCHAR(50),
+	@direction VARCHAR(100),
+	@date_of_birth DATE
+AS 
+BEGIN
+INSERT INTO Pacientes(dni,first_name ,last_name ,direction ,date_of_birth )
+Values(@dni,@first_name ,@last_name ,@direction ,@date_of_birth);
+END
+	
+CREATE PROCEDURE InsertarMedicos
+	@dni INT ,
+	@first_name VARCHAR(50),
+	@last_name VARCHAR(50),
+	@direction VARCHAR(100),
+	@especiality VARCHAR(100)
+AS 
+BEGIN
+INSERT INTO Medicos(dni,first_name ,last_name ,direction ,especiality )
+Values(@dni,@first_name ,@last_name ,@direction ,@especiality);
+END
+
+CREATE PROCEDURE InsertarTurnos
+	@fecha_turno DATE,
+	@paciente_dni INT,
+	@medico_dni INT 
+AS
+BEGIN
+	INSERT INTO Turnos(fecha_turno,paciente_dni,medico_dni )
+	Values(@fecha_turno, @paciente_dni, @medico_dni);
+END
+
+
+CREATE PROCEDURE InsertarHistoriasClinicas 
+	 
+	@observacion VARCHAR(1500),
+	@dni_paciente INT ,
+	@turno INT 
+AS
+BEGIN
+	INSERT INTO HistoriasClinicas(observacion,dni_paciente,turno )
+	Values(@observacion, @dni_paciente,@turno);
+END
+
+
+
+CREATE PROCEDURE InsertarPago
+	@fecha_pago DATE,
+	@paciente_dni INT,
+	@turno INT 
+AS 
+BEGIN
+	INSERT INTO Pagos(fecha_pago,paciente_dni,turno )
+	Values(@fecha_pago, @paciente_dni,@turno);
+END
+
+
+EXECUTE InsertarPacientes 40900900,'Maria','Orlanda','Garibaldi 120','2000-12-20';
+
+Execute InsertarMedicos 23409309,'Gustavo','Garay','Av.Libertador 239','Quiropractico';
+
+Execute InsertarTurnos '2024-10-23',40900900,23409309;
+
+Execute InsertarHistoriasClinicas 'Tiene un calambre',40900900,5;
+
+Execute InsertarPago '2024-10-23',40900900,5;
+
+
+
+
+EXECUTE InsertarPacientes 40800800,'Josefina','Lopez','Belgrano 120','2000-10-22';
+
+Execute InsertarMedicos 25410312,'Guillermo','Perez','Av.Madrid 323','Dermatologo';
+
+Execute InsertarTurnos '2022-11-03',40800800,25410312;
+
+Execute InsertarHistoriasClinicas 'Problemas en la piel',40800800,6;
+
+Execute InsertarPago NULL,40800800,6;
+
+
+--------------------------------------------------------------
+CREATE PROCEDURE HistorialDePaciente
+@dni_paciente INT
+AS 
+BEGIN
+SELECT * FROM HistoriasClinicas
+WHERE dni_paciente=@dni_paciente
+END;
+
+
+EXEC HistorialDePaciente 40900900;
+---------------------------------------------------------------
+
+Use Clinica;
+
+CREATE PROCEDURE ActualizarPacientes
+	@dni INT ,
+	@first_name VARCHAR(50),
+	@last_name VARCHAR(50),
+	@direction VARCHAR(100),
+	@date_of_birth DATE
+AS 
+BEGIN
+UPDATE Pacientes SET dni=@dni,
+					 first_name=@first_name,
+					 last_name= @last_name,
+					 direction= @direction,
+					 date_of_birth = @date_of_birth
+END;
+	
+CREATE PROCEDURE ActualizarMedicos
+	@dni INT ,
+	@first_name VARCHAR(50),
+	@last_name VARCHAR(50),
+	@direction VARCHAR(100),
+	@especiality VARCHAR(100)
+AS 
+BEGIN
+UPDATE Medicos SET dni=@dni,
+				   first_name=@first_name,
+				   last_name= @last_name,
+				   direction= @direction,
+				   especiality= @especiality
+END;
+
+
+
+
+----------------------------------------------------------------
+USE Clinica;
+
+CREATE VIEW turnos_entre_fechas
+AS
+SELECT *  FROM Turnos
+WHERE fecha_turno BETWEEN '2023-01-01' AND '2024-12-31' AND paciente_dni=40900900;
+
+
+CREATE VIEW cantidad_pagos_por_paciente
+AS
+SELECT  count(id_pago) AS cantidad_de_pagos FROM Pagos
+WHERE paciente_dni = 40900900;
+
+CREATE VIEW especialidad_medico
+AS
+SELECT especiality FROM Medicos
+WHERE first_name='Gustavo' AND last_name='Garay';
+
+CREATE VIEW clientes_no_pagaron
+AS
+SELECT * FROM Pagos
+WHERE fecha_pago IS NULL;
+
+---------------------------------------------------------------
+	
